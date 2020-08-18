@@ -13,7 +13,7 @@ import (
 	"github.com/piquette/finance-go/equity"
 )
 
-// Uses https://piquette.io/projects/finance-go/ https://github.com/piquette/finance-go
+// Uses https://piquette.io/projects/finance-go/ from https://github.com/piquette/finance-go - Thanks piquette
 
 func main() {
 	// Setup
@@ -30,12 +30,16 @@ func main() {
 	// Setup collection interval
 	ci, _ := strconv.ParseUint(os.Getenv("COLLECTION_INTERVAL"), 10, 32)
 	if ci == 0 {
-		ci = 10 // ci probably unset - But if set to 0 then don't DoS the bridge
+		ci = 60
 	}
 	collectionInterval := time.Duration(ci) * time.Second
 
 	symbols := strings.Split(os.Getenv("SYMBOLS"), ",")
+	if len(symbols) == 0 || symbols[0] == "" {
+		panic("Please set the environment variable SYMBOLS to your preferred stock ticker names, comma seperated. Ie SYMBOLS=AAPL,TSLA")
+	}
 
+	// Collection loop
 	for {
 		iter := equity.List(symbols)
 
@@ -43,8 +47,7 @@ func main() {
 		for iter.Next() {
 			q := iter.Equity()
 			if os.Getenv("DEBUG") != "" {
-				fmt.Println(q.Symbol, "(", q.ShortName, "): Bid: ", q.Bid, " Ask: ", q.Ask, "Price:", q.RegularMarketPrice)
-				fmt.Printf("     High: %.2f Low: %.2f Close: %.2f Post: %.2f\n", q.RegularMarketDayHigh, q.RegularMarketDayLow, q.RegularMarketPreviousClose, q.RegularMarketPrice+q.PreMarketChange)
+				fmt.Printf("%s (%s): Bid: %.2f Ask: %.2f Price: %.2f High: %.2f Low: %.2f Close: %.2f Post: %.2f\n", q.Symbol, q.ShortName, q.Bid, q.Ask, q.RegularMarketPrice, q.RegularMarketDayHigh, q.RegularMarketDayLow, q.RegularMarketPreviousClose, q.RegularMarketPrice+q.PreMarketChange)
 			}
 			statsd.Gauge("bid", q.Bid, []string{"symbol:" + q.Symbol}, 1)
 			statsd.Gauge("ask", q.Ask, []string{"symbol:" + q.Symbol}, 1)

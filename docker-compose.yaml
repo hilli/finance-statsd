@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  finance-statsd:
+    image: hilli/finance-statsd
+    container_name: finance-statsd
+    hostname: finance-statsd
+    restart: unless-stopped
+    environment:
+      STATSD_ENDPOINT: "localhost:8125"
+      COLLECTION_INTERVAL: 60
+      SYMBOLS: "AAPL,TSLA,MSFT"
+      DEBUG: "true"
