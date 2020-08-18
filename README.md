@@ -9,8 +9,13 @@ Collects finance statistics from Yahoo Finance and emits the data to StatsD (ie 
 ## Setup ticker symbols in the environment
 
 ```bash
-docker pull hilli/finance-statsd:latest
-docker run -e SYMBOLS=AAPL,TSLA,MSFT hilli/finance-statsd
+docker run --rm -e SYMBOLS=AAPL,TSLA,MSFT hilli/finance-statsd
+```
+
+or with visual output in the log as well while collecting data at every 30s sending it to another server:
+
+```bash
+docker run --rm -e DEBUG=true -e COLLECTION_INTERVAL=30 -e STATSD_ENDPOINT=telegraf.local:8125 -e SYMBOLS=AAPL,TSLA,MSFT hilli/finance-statsd
 ```
 
 If you prefer, you can create a `.env` file with the same environment as the docker-compose file and map it to the container as a volume.
@@ -34,6 +39,7 @@ services:
       STATSD_ENDPOINT: "localhost:8125"
       COLLECTION_INTERVAL: 60 # Seconds
       SYMBOLS: "AAPL,TSLA,MSFT"
+      #DEBUG: "jearh" # Print the collected results in a human readable format to the docker log
 ```
 
 `docker-compose.yaml` setting the environment in an `.env` file:
@@ -54,5 +60,5 @@ services:
 STATSD_ENDPOINT=localhost:8125
 COLLECTION_INTERVAL=60 # Seconds
 SYMBOLS=AAPL,TSLA,MSFT
-#DEBUG=true # Output data to stdout as well
+#DEBUG=OK # Output data to stdout as well
 ```

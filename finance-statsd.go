@@ -21,8 +21,8 @@ func main() {
 	if statsdEndpoint == "" {
 		statsdEndpoint = "127.0.0.1:8125"
 	}
-	statsd, err := statsd.New(statsdEndpoint)
-	statsd.Namespace = "stocks."
+	statsdc, err := statsd.New(statsdEndpoint)
+	statsdc.Namespace = "stocks."
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,13 +49,13 @@ func main() {
 			if os.Getenv("DEBUG") != "" {
 				fmt.Printf("%s (%s): Bid: %.2f Ask: %.2f Price: %.2f High: %.2f Low: %.2f Close: %.2f Post: %.2f\n", q.Symbol, q.ShortName, q.Bid, q.Ask, q.RegularMarketPrice, q.RegularMarketDayHigh, q.RegularMarketDayLow, q.RegularMarketPreviousClose, q.RegularMarketPrice+q.PreMarketChange)
 			}
-			statsd.Gauge("bid", q.Bid, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("ask", q.Ask, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("price", q.RegularMarketPrice, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("high", q.RegularMarketDayHigh, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("low", q.RegularMarketDayLow, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("prev_close", q.RegularMarketPreviousClose, []string{"symbol:" + q.Symbol}, 1)
-			statsd.Gauge("post", q.RegularMarketPrice+q.PreMarketChange, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("bid", q.Bid, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("ask", q.Ask, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("price", q.RegularMarketPrice, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("high", q.RegularMarketDayHigh, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("low", q.RegularMarketDayLow, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("prev_close", q.RegularMarketPreviousClose, []string{"symbol:" + q.Symbol}, 1)
+			statsdc.Gauge("post", q.RegularMarketPrice+q.PreMarketChange, []string{"symbol:" + q.Symbol}, 1)
 		}
 
 		// Catch an error, if there was one.
