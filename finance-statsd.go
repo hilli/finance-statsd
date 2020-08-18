@@ -10,17 +10,13 @@ import (
 
 func main() {
 	symbols := []string{"AAPL", "TSLA", "MSFT"}
-	// iter := quote.List(symbols)
 	iter := equity.List(symbols)
 
 	// Iterate over results. Will exit upon any error.
 	for iter.Next() {
-		// q := iter.Quote()
 		q := iter.Equity()
 		fmt.Println(q.Symbol, "(", q.ShortName, "): Bid: ", q.Bid, " Ask: ", q.Ask, "Price:", q.RegularMarketPrice)
-		fmt.Println("High:", q.RegularMarketDayHigh, "Low:", q.RegularMarketDayLow, "Close:", q.RegularMarketPreviousClose)
-		fmt.Println()
-
+		fmt.Printf("High: %.2f Low: %.2f Close: %.2f Post: %.2f\n", q.RegularMarketDayHigh, q.RegularMarketDayLow, q.RegularMarketPreviousClose, q.RegularMarketPrice+q.PreMarketChange)
 	}
 
 	// Catch an error, if there was one.
